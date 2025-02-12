@@ -5,8 +5,8 @@ import NishuProduct from "@/models/products";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { productId: string } }
-) {
+  { params }: { params: Record<string, string> }
+)  {
     try {
        await connectToDatabase();
        const {productId} =  params ;
