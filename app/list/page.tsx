@@ -1,10 +1,12 @@
 import CategoryProducts from '@/components/CategoryProducts'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 function page() {
   return (
     <div>
+      <Suspense fallback={<p>Loading products...</p>}>
         <CategoryProducts/>
+      </Suspense>
     </div>
   )
 }
