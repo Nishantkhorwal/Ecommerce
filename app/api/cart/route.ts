@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase }from '@/db/connection'; // Adjust the path as needed
 import NishuCart from '@/models/cart'; // Adjust the path as needed
 import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]/route';
+import { authOptions } from "@/lib/authOptions";
 
 export async function POST(request: Request) {
   // Connect to your database

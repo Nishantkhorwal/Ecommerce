@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/db/connection";
 import EcomUser from "@/models/ecomUser";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/authOptions";
 import bcrypt from "bcryptjs";
-import type { ExtendedSession } from "@/app/api/auth/[...nextauth]/route"; // Import the type
+import type { ExtendedSession } from "@/lib/authOptions"; // Import the type
 
 
 interface UpdateUser {
