@@ -4,7 +4,7 @@ import NishuProduct from "@/models/products";
 
 
 export async function GET(
-  { params }: { params: { productId: string } }
+  { params }: { params: { productId: string; }; }
 ) {
     try {
        await connectToDatabase();
