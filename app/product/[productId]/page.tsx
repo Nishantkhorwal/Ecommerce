@@ -59,6 +59,7 @@ function ProductPage() {
           setError("Product not found");
         }
       } catch (err) {
+        console.log(err);
         setError("Error fetching product details");
       } finally {
         setLoading(false);
