@@ -6,6 +6,14 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import bcrypt from "bcryptjs";
 import type { ExtendedSession } from "@/app/api/auth/[...nextauth]/route"; // Import the type
 
+
+interface UpdateUser {
+  username?: string;
+  email?: string;
+  password?: string;
+  bio?: string;
+}
+
 export async function PUT(req: Request) {
   try {
     const session = (await getServerSession(authOptions)) as ExtendedSession;
@@ -18,7 +26,7 @@ export async function PUT(req: Request) {
     await connectToDatabase();
     const { username, email, password, bio } = await req.json();
 
-    const updates: any = {};
+    const updates:  UpdateUser = {};
     if (username) updates.username = username;
     if (email) updates.email = email;
     if (password) updates.password = await bcrypt.hash(password, 10);

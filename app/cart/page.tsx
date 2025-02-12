@@ -75,9 +75,6 @@ function Page() {
     fetchCart();
   }, []);
 
-  // Example quantity state and handler for demonstration.
-  const [quantity, setQuantity] = useState<number>(1);
-  const stock = 20;
 
   return (
     <div>
