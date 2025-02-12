@@ -32,10 +32,12 @@ function Register() {
       setEmail("");
       setPassword("");
       setBio("");
-    } catch (error: any) {
-      setMessage(`❌ ${error.message}`);
-    } finally {
-      setLoading(false);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setMessage(`❌ ${error.message}`);
+      } else {
+        setMessage("❌ An unknown error occurred");
+      }
     }
   };
 

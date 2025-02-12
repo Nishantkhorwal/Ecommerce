@@ -66,6 +66,7 @@ function Page() {
           setCartError("Failed to fetch cart.");
         }
       } catch (err) {
+        console.log(err);
         setCartError("Error fetching cart.");
       } finally {
         setLoadingCart(false);
@@ -77,14 +78,6 @@ function Page() {
   // Example quantity state and handler for demonstration.
   const [quantity, setQuantity] = useState<number>(1);
   const stock = 20;
-  const handleQuantity = (type: "i" | "d") => {
-    if (type === "d" && quantity > 1) {
-      setQuantity((prev) => prev - 1);
-    }
-    if (type === "i" && quantity < stock) {
-      setQuantity((prev) => prev + 1);
-    }
-  };
 
   return (
     <div>

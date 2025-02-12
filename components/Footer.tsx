@@ -31,7 +31,7 @@ function Footer() {
             <div className='w-full lg:w-[20%] text-white'>
                 <p className='text-xl font-semibold mb-4'>Support</p>
                 <ul className='flex flex-col justify-start gap-4'>
-                    <li>FAQ's</li>
+                    <li>FAQ&apos;s</li>
                     <li>Helpline</li>
                     <li>Store Locator</li>
                     <li>Terms & Conditions</li>
