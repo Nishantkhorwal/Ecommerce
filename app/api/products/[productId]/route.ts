@@ -3,7 +3,9 @@ import { connectToDatabase } from "@/db/connection"; // Import MongoDB connectio
 import NishuProduct from "@/models/products";
 
 
-export async function GET(req : Request, {params} : {params : {productId : string}} ) {
+export async function GET(
+  { params }: { params: { productId: string } }
+) {
     try {
        await connectToDatabase();
        const {productId} = await params ;
