@@ -8,7 +8,7 @@ export async function GET(
 ) {
     try {
        await connectToDatabase();
-       const {productId} = await params ;
+       const {productId} =  params ;
        if(!productId){
         return NextResponse.json({message : "Product id not found"}, {status : 400})
        }
