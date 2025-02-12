@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { connectToDatabase } from "@/db/connection"; // Import MongoDB connection utility
 import NishuProduct from "@/models/products";
 
 
 export async function GET(
-  { params }: { params: { productId: string; }; }
+  request: NextRequest,
+  { params }: { params: { productId: string } }
 ) {
     try {
        await connectToDatabase();
