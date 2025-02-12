@@ -1,5 +1,5 @@
 // lib/authOptions.ts
-import NextAuth, { NextAuthOptions, Session, User as NextAuthUser } from "next-auth";
+import { NextAuthOptions, Session, User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { connectToDatabase } from "@/db/connection";
