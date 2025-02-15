@@ -83,7 +83,8 @@ export async function GET() {
   
     try {
       // Find the cart for the user and populate the product details if needed.
-      const cart = await NishuCart.findOne({ user: userId }).populate("items.product");
+      const cart = await NishuCart.findOne({ user: userId }).populate("items.product")
+      .lean() ;
       // If no cart exists, return an empty cart structure
       if (!cart) {
         return NextResponse.json({ success: true, cart: { user: userId, items: [] } });
@@ -98,4 +99,50 @@ export async function GET() {
       );
     }
   }
+
+  export async function DELETE() {
+    // Connect to the database
+    await connectToDatabase();
+  
+    // Get the authenticated user's session
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { success: false, message: "Not authenticated" },
+        { status: 401 }
+      );
+    }
+  
+    // Get the user ID from the session
+    const userId = session.user.id;
+  
+    try {
+      // Find the cart for the user and remove all items
+      const cart = await NishuCart.findOneAndUpdate(
+        { user: userId },
+        { $set: { items: [] } }, // Set the items array to empty
+        { new: true } // Return the updated cart
+      );
+  
+      if (!cart) {
+        return NextResponse.json({
+          success: false,
+          message: "Cart not found",
+        });
+      }
+  
+      return NextResponse.json({
+        success: true,
+        message: "Cart emptied successfully",
+        cart,
+      });
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      return NextResponse.json(
+        { success: false, message: "Internal server error" },
+        { status: 500 }
+      );
+    }
+  }
+  
 
