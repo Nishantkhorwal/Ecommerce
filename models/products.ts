@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+
 interface INishuProduct extends Document {
   name: string;
   description: string;

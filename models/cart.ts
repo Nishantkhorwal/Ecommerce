@@ -26,7 +26,7 @@ const cartItemSchema = new Schema<ICartItem>({
 // Schema for the Cart
 const cartSchema = new Schema<ICart>(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "EcomUser", required: true },
     items: [cartItemSchema],
     taxRate: { type: Number, required: true, default: 0 }, // Use a tax rate (e.g., 0.07 for 7%)
   },

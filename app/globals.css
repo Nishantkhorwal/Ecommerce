@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+html{
+  scroll-behavior: smooth;
+}
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Hides scrollbar in Chrome, Safari, and Edge */

@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+
+
 // Define the Order Item interface
 interface OrderItem {
   product: mongoose.Types.ObjectId | { _id: mongoose.Types.ObjectId; price: number };
@@ -21,10 +23,10 @@ export interface OrderDocument extends Document {
 // Define the Order Schema
 const orderSchema = new Schema<OrderDocument>(
   {
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true }, // ✅ FIXED!
+    user: { type: Schema.Types.ObjectId, ref: "EcomUser", required: true }, // ✅ FIXED!
     items: [
       {
-        product: { type: Schema.Types.ObjectId, ref: "Product", required: true }, // ✅ FIXED!
+        product: { type: Schema.Types.ObjectId, ref: "NishuProduct", required: true }, // ✅ FIXED!
         quantity: { type: Number, required: true },
         color: { type: String, required: true },
       },

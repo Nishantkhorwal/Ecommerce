@@ -27,7 +27,7 @@ function Categories() {
   }, []);
 
   return (
-    <div className="overflow-x-auto whitespace-nowrap scrollbar-hide">
+    <div id="categories" className="overflow-x-auto whitespace-nowrap scrollbar-hide">
       <div className="flex gap-10 w-max">
         {categories.length > 0 ? (
           categories.map((cat, index) => (

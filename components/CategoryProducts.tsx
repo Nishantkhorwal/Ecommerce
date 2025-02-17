@@ -44,7 +44,7 @@ function CategoryProducts() {
   }, [category]);
 
   return (
-    <div>
+    <div id="productcategories">
       <Header bgImage="/images/bgImage5.jpg" />
       <div className="px-20 py-20">
         <h1 className="font-semibold text-3xl mb-10">{category} Products</h1>

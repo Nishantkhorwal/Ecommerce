@@ -80,3 +80,38 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
   }
 }
+
+
+export async function GET(request: Request) {
+  await connectToDatabase();
+
+  const session = await getServerSession(authOptions);
+  if (!session || !session.user) {
+    return NextResponse.json({ success: false, message: "Not authenticated" }, { status: 401 });
+  }
+
+  const userId = session.user.id;
+  try {
+    // Fetch all orders for the user
+    const orders = await Order.find({ user: userId })
+    .populate("items.product", "name price")
+    .lean();
+
+    if (orders.length === 0) {
+      return NextResponse.json({ success: false, message: "No orders found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, orders });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return NextResponse.json({ success: false, message: "Internal server error" }, { status: 500 });
+  }
+}
+
+
+
+
+
+
+
+

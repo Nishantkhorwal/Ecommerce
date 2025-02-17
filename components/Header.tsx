@@ -8,6 +8,7 @@ import { CgProfile } from "react-icons/cg";
 import { FaCartShopping } from "react-icons/fa6";
 import { IoMenuOutline, IoClose } from "react-icons/io5";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface NavbarProps {
   bgImage: string;
@@ -18,6 +19,9 @@ const Header: React.FC<NavbarProps> = ({ bgImage }) => {
   const [slider, setSlider] = useState<boolean>(false);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const { data: session } = useSession(); // Check session status
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const router = useRouter();
+  const [cartCount, setCartCount] = useState<number>(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,6 +30,27 @@ const Header: React.FC<NavbarProps> = ({ bgImage }) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleSearch = () => {
+    if (searchQuery.trim() !== "") {
+      const formattedCategory =
+        searchQuery.trim().charAt(0).toUpperCase() + searchQuery.trim().slice(1).toLowerCase();
+      router.push(`/list?category=${formattedCategory}`);
+    }
+  };
+  useEffect(() => {
+    if (session) {
+      fetch("/api/cart")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            setCartCount(data.cart.items.length);
+          }
+        })
+        .catch((err) => console.error("Error fetching cart:", err));
+    }
+  }, [session]);
+
 
   return (
     <>
@@ -48,19 +73,21 @@ const Header: React.FC<NavbarProps> = ({ bgImage }) => {
               <ul className="flex flex-row text-sm text-white items-center justify-center gap-8">
                 <Link href='/'><li className="cursor-pointer">Home</li></Link>
                 <li className="cursor-pointer">About</li>
-                <li className="cursor-pointer">Categories</li>
                 <li className="cursor-pointer">Terms & Condition</li>
               </ul>
             </div>
 
             <div className="lg:flex flex-row gap-6 hidden">
               <div className="flex flex-row items-center rounded-2xl bg-white px-3 py-1">
-                <input
-                  type="search"
-                  className="focus:outline-none rounded-l-xl px-1"
-                  placeholder="Search.."
-                />
-                <IoIosSearch />
+              <input
+                type="search"
+                className="focus:outline-none rounded-l-xl px-1"
+                placeholder="Search Category.."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              />
+              <IoIosSearch className="cursor-pointer" onClick={handleSearch} />
               </div>
               <div className="lg:flex flex-row items-center text-white text-xl gap-6 hidden">
                 <IoMdNotificationsOutline />
@@ -74,6 +101,7 @@ const Header: React.FC<NavbarProps> = ({ bgImage }) => {
                     {session ? (
                       <>
                         <Link href="/profile"><p className="mb-2">Profile</p></Link>
+                        <Link href="/orders"><p className="mb-2">Orders</p></Link>
                         <button onClick={() => signOut()} className="text-red-500">Logout</button>
                       </>
                     ) : (
@@ -84,7 +112,16 @@ const Header: React.FC<NavbarProps> = ({ bgImage }) => {
                     )}
                   </div>
                 </div>
-                <Link href='/cart'><FaCartShopping /></Link>
+                <div className="relative">
+                  <Link href="/cart">
+                    <FaCartShopping className="text-xl" />
+                  </Link>
+                  {cartCount > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                      {cartCount}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
