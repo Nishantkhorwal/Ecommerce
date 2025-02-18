@@ -5,6 +5,7 @@ import { Poppins } from "next/font/google";
 import React, { useEffect, useState } from "react";
 import RazorpayScriptLoader from "@/components/RazorpayScriptLoader";
 import { useSession } from "next-auth/react";
+import AddressSelector from "@/components/AddressSelector"; // Import the new component
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -43,51 +44,52 @@ function Page() {
 
   const [address, setAddress] = useState<string>("");
   const [addressType, setAddressType] = useState<string>("Home");
+  const fetchCart = async () => {
+    try {
+      const res = await fetch("/api/cart");
+      const data = await res.json();
+      console.log("Cart Data:", data.cart); // Debugging log
+
+      if (data.success && data.cart) {
+        let totalPrice = data.cart.totalPrice || 0;
+        let taxAmount = data.cart.taxAmount || 0;
+        
+        // Calculate totalPrice if it's missing
+        if (!totalPrice) {
+          totalPrice =
+            data.cart.items?.reduce(
+              (acc: number, item: CartItem) => acc + item.product.price * item.quantity,
+              0
+            ) || 0;
+        }
+
+        // Ensure taxAmount is valid
+        if (!taxAmount) {
+          taxAmount = (totalPrice * (data.cart.taxRate || 0)) / 100;
+        }
+
+        // Ensure totalPriceWithTax is valid
+        const totalPriceWithTax = totalPrice + taxAmount;
+
+        setCart({
+          ...data.cart,
+          totalPrice,
+          taxAmount,
+          totalPriceWithTax,
+        });
+      } else {
+        setCartError("Failed to fetch cart.");
+      }
+    } catch (err) {
+      console.log(err);
+      setCartError("Error fetching cart.");
+    } finally {
+      setLoadingCart(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const res = await fetch("/api/cart");
-        const data = await res.json();
-        console.log("Cart Data:", data.cart); // Debugging log
-  
-        if (data.success && data.cart) {
-          let totalPrice = data.cart.totalPrice || 0;
-          let taxAmount = data.cart.taxAmount || 0;
-          
-          // Calculate totalPrice if it's missing
-          if (!totalPrice) {
-            totalPrice =
-              data.cart.items?.reduce(
-                (acc: number, item: CartItem) => acc + item.product.price * item.quantity,
-                0
-              ) || 0;
-          }
-  
-          // Ensure taxAmount is valid
-          if (!taxAmount) {
-            taxAmount = (totalPrice * (data.cart.taxRate || 0)) / 100;
-          }
-  
-          // Ensure totalPriceWithTax is valid
-          const totalPriceWithTax = totalPrice + taxAmount;
-  
-          setCart({
-            ...data.cart,
-            totalPrice,
-            taxAmount,
-            totalPriceWithTax,
-          });
-        } else {
-          setCartError("Failed to fetch cart.");
-        }
-      } catch (err) {
-        console.log(err);
-        setCartError("Error fetching cart.");
-      } finally {
-        setLoadingCart(false);
-      }
-    };
+    
   
     fetchCart();
   }, []);
@@ -135,8 +137,6 @@ function Page() {
             addressType,
           }),
         });
-
-        await fetch("/api/cart", { method: "DELETE" });
         setCart(null);
       },
       prefill: {
@@ -150,6 +150,27 @@ function Page() {
     const razorpay = new (window as any).Razorpay(options);
     razorpay.open();
   };
+  const handleRemoveItem = async (productId: string, color: string) => {
+    try {
+      const res = await fetch("/api/cart", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, color }),
+      });
+  
+      const data = await res.json();
+  
+      if (data.success) {
+        fetchCart();// Update cart state instantly
+      } else {
+        alert("Failed to remove item.");
+      }
+    } catch (error) {
+      console.error("Error removing item:", error);
+      alert("Something went wrong!");
+    }
+  };
+  
 
   return (
     <div>
@@ -169,8 +190,14 @@ function Page() {
               cart.items.map((item) => (
                 <div
                   key={item._id}
-                  className="flex flex-row gap-6 border mb-7 py-6 justify-center items-center px-4 shadow-xl rounded-md"
+                  className="relative flex flex-row gap-6 border mb-7 py-6 justify-center items-center px-4 shadow-xl rounded-md"
                 >
+                  <button
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                    onClick={() => handleRemoveItem(item.product._id, item.color)}
+                  >
+                    &minus;
+                  </button>
                   <div className="w-[40%]">
                     <img
                       src={item.product.images?.[0] || "/images/p1.jpg"}
@@ -183,6 +210,16 @@ function Page() {
                     <p className={`font-bold ${poppins.className} text-xl mb-5`}>
                       {item.product.name}
                     </p>
+                    <div className="flex flex-row mb-4 justify-between items-center">
+                      <p className={`font-semibold ${poppins.className} text-sm`}>
+                        Quantity
+                      </p>
+                      <p className={`font-semibold ${poppins.className} text-sm`}>
+                        {item.quantity}
+                      </p>
+                    </div>
+                    
+
                     <div className="flex flex-row justify-between items-center">
                       <p className={`font-semibold ${poppins.className} text-xl`}>
                         Subtotal
@@ -204,7 +241,7 @@ function Page() {
               <div className="mb-4">
                 <label className="block mb-2 font-semibold">Delivery Address</label>
                 <textarea
-                  className="w-full border rounded-md p-2"
+                  className="w-full resize-none border rounded-md p-2"
                   placeholder="Enter your address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}

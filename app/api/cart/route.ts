@@ -100,7 +100,7 @@ export async function GET() {
     }
   }
 
-  export async function DELETE() {
+  export async function DELETE(request: Request) {
     // Connect to the database
     await connectToDatabase();
   
@@ -113,15 +113,25 @@ export async function GET() {
       );
     }
   
-    // Get the user ID from the session
-    const userId = session.user.id;
+    // Parse request body to get productId and color
+    const { productId, color } = await request.json();
+  
+    if (!productId || !color) {
+      return NextResponse.json(
+        { success: false, message: "Missing required fields" },
+        { status: 400 }
+      );
+    }
   
     try {
-      // Find the cart for the user and remove all items
+      // Get the user ID from session
+      const userId = session.user.id;
+  
+      // Find the cart and remove the specific item
       const cart = await NishuCart.findOneAndUpdate(
         { user: userId },
-        { $set: { items: [] } }, // Set the items array to empty
-        { new: true } // Return the updated cart
+        { $pull: { items: { product: productId, color: color } } }, // Remove item matching productId and color
+        { new: true } // Return updated cart
       );
   
       if (!cart) {
@@ -133,16 +143,17 @@ export async function GET() {
   
       return NextResponse.json({
         success: true,
-        message: "Cart emptied successfully",
+        message: "Item removed from cart",
         cart,
       });
     } catch (error) {
-      console.error("Error clearing cart:", error);
+      console.error("Error removing item from cart:", error);
       return NextResponse.json(
         { success: false, message: "Internal server error" },
         { status: 500 }
       );
     }
   }
+    
   
 

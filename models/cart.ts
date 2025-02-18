@@ -65,8 +65,8 @@ cartSchema.set("toJSON", { virtuals: true });
 cartSchema.set("toObject", { virtuals: true });
 
 // Prevent model recompilation in environments like Next.js
-const NishuCart: Model<ICart> =
-  models.NishuCart || mongoose.model<ICart>("NishuCart", cartSchema);
+const NishuCart: Model<ICart> = models.NishuCart || mongoose.model<ICart>("NishuCart", cartSchema);
+
 
 export default NishuCart;
 

@@ -40,7 +40,7 @@ const orderSchema = new Schema<OrderDocument>(
 );
 
 // Define the Mongoose Model
-const Order = mongoose.models.Order || mongoose.model<OrderDocument>("Order", orderSchema);
+const Order =  mongoose.model<OrderDocument>("Order", orderSchema);
 
 export default Order;
 
